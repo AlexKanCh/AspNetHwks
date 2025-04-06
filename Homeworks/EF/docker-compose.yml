@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  api:
+    build: src
+    container_name: 'promocodefactory_api'
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      - "ConnectionStrings:Host=postgres;Database=postgres_db;Username=postgres;Password=postgres"
+    depends_on: 
+      - postgres
+
+  postgres:
+    image: postgres:15 
+    container_name: postgres_db 
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres 
+      POSTGRES_DB: postgres_db 
+    ports:
+      - "5432:5432" 
+    restart: always
