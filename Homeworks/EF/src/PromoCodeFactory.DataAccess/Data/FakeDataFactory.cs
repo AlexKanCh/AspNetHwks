@@ -81,7 +81,7 @@ namespace PromoCodeFactory.DataAccess.Data
 
                         Preferences = new List<Preference>()
                         {
-                            Preferences.FirstOrDefault(x => x.Name == "Театр")!,
+                            Preferences.FirstOrDefault(x => x.Name == "Машины")!,
                             Preferences.FirstOrDefault(x => x.Name == "Семья")!,
                         }
                     }
