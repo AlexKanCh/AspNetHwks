@@ -1,5 +1,4 @@
-version: '3.8'
-
+version: "3.4"
 services:
   api:
     build: src
@@ -11,14 +10,13 @@ services:
       - "ConnectionStrings:Host=postgres;Database=postgres_db;Username=postgres;Password=postgres"
     depends_on: 
       - postgres
-
   postgres:
-    image: postgres:15 
-    container_name: postgres_db 
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres 
-      POSTGRES_DB: postgres_db 
+    image: postgres:alpine
+    restart: unless-stopped
     ports:
-      - "5432:5432" 
-    restart: always
+      - 5432:5432
+    environment:
+      POSTGRES_DB: postgres_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      TZ: Europe/Moscow
