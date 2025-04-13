@@ -34,7 +34,7 @@ namespace PromoCodeFactory.WebHost
             services.AddDbContext<DatabaseContext>(options =>
             {
                 options.UseLazyLoadingProxies();
-                options.UseSqlite(applicationSettings.ConnectionString);
+                options.UseNpgsql(applicationSettings.ConnectionString);
             });
 
             //services.AddScoped(typeof(IRepository<Employee>), (x) =>

@@ -3,11 +3,11 @@ services:
   api:
     build: src
     container_name: 'promocodefactory_api'
-    restart: always
+    restart: unless-stopped
     ports:
       - "8080:80"
     environment:
-      - "ConnectionStrings:Host=postgres;Database=postgres_db;Username=postgres;Password=postgres"
+      - "ConnectionString:Host=postgres:5432;Database=postgres_db;Username=postgres;Password=postgres"
     depends_on: 
       - postgres
   postgres:
