@@ -2,5 +2,5 @@
 
 public class ConnectionConfiguration
 {
-    public string ConnectionString { get; set; }
+    public string ConnectionStrings { get; set; }
 }
