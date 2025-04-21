@@ -23,12 +23,12 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore
-        working-directory: ../../Homeworks/EF/src/ 
+        working-directory: ./Homeworks/EF/src/ 
 
       - name: Build project
         run: dotnet build --configuration Release --no-restore
-        working-directory: ../../Homeworks/EF/src/
+        working-directory: ./Homeworks/EF/src/
 
       - name: Run tests
         run: dotnet test --configuration Release --no-build --verbosity normal
-        working-directory: ../../Homeworks/EF/src/
+        working-directory: ./Homeworks/EF/src/
