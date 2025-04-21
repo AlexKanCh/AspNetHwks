@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Otus.PromocodeFactory.WebHost": {
+    "PromocodeFactory.WebHost": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger/index.html",

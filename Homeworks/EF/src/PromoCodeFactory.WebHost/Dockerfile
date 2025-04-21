@@ -1,17 +1,14 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-
+# Сборочный образ
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /app
+WORKDIR /src
 
-COPY *.sln .
-COPY */*.csproj ./
-RUN for file in $(ls *.csproj); do mkdir -p ${file%.*} && mv $file ${file%.*}; done
+# Копирование проекта
+COPY . .
 RUN dotnet restore
+RUN dotnet publish -c Release -o /app
 
-COPY ./ ./
-RUN dotnet build -c Release --no-restore
-RUN dotnet publish -c Release -o out --no-restore --no-build
-
-FROM base AS final
-COPY --from=build /app/out ./
-ENTRYPOINT ["dotnet", "Otus.Teaching.PromoCodeFactory.WebHost.dll"]
+# Финальный образ
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /app
+COPY --from=build /app .
+ENTRYPOINT ["dotnet", "PromoCodeFactory.WebHost.dll"]

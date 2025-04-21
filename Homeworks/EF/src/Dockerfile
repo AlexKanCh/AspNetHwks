@@ -14,4 +14,4 @@ RUN dotnet publish -c Release -o out --no-restore --no-build
 
 FROM base AS final
 COPY --from=build /app/out ./
-ENTRYPOINT ["dotnet", "Otus.Teaching.PromoCodeFactory.WebHost.dll"]
+ENTRYPOINT ["dotnet", "PromoCodeFactory.WebHost.dll"]
