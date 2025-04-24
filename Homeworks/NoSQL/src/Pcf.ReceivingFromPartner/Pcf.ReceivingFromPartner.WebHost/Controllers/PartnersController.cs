@@ -8,8 +8,9 @@ using Microsoft.AspNetCore.Mvc;
  using Pcf.ReceivingFromPartner.Core.Abstractions.Repositories;
  using Pcf.ReceivingFromPartner.Core.Domain;
  using Pcf.ReceivingFromPartner.WebHost.Mappers;
+using Pcf.ReceivingFromPartner.WebHost.Services;
 
- namespace Pcf.ReceivingFromPartner.WebHost.Controllers
+namespace Pcf.ReceivingFromPartner.WebHost.Controllers
 {
     /// <summary>
     /// Партнеры
@@ -20,19 +21,19 @@ using Microsoft.AspNetCore.Mvc;
         : ControllerBase
     {
         private readonly IRepository<Partner> _partnersRepository;
-        private readonly IRepository<Preference> _preferencesRepository;
+        private readonly PreferenceService _preferenceService;
         private readonly INotificationGateway _notificationGateway;
         private readonly IGivingPromoCodeToCustomerGateway _givingPromoCodeToCustomerGateway;
         private readonly IAdministrationGateway _administrationGateway;
 
         public PartnersController(IRepository<Partner> partnersRepository,
-            IRepository<Preference> preferencesRepository, 
+            PreferenceService preferenceService, 
             INotificationGateway notificationGateway,
             IGivingPromoCodeToCustomerGateway givingPromoCodeToCustomerGateway,
             IAdministrationGateway administrationGateway)
         {
             _partnersRepository = partnersRepository;
-            _preferencesRepository = preferencesRepository;
+            _preferenceService = preferenceService;
             _notificationGateway = notificationGateway;
             _givingPromoCodeToCustomerGateway = givingPromoCodeToCustomerGateway;
             _administrationGateway = administrationGateway;
@@ -316,8 +317,8 @@ using Microsoft.AspNetCore.Mvc;
                 return BadRequest("Данный промокод уже был выдан ранее");
             }
 
-            //Получаем предпочтение по имени
-            var preference = await _preferencesRepository.GetByIdAsync(request.PreferenceId);
+            //Получаем предпочтение
+            var preference = await _preferenceService.GetPreference(request.PreferenceId.ToString());
 
             if (preference == null)
             {
