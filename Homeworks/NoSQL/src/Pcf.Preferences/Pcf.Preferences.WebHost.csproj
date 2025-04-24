@@ -7,6 +7,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="data\preferenceChildren.json" />
+    <Content Remove="data\preferenceFamily.json" />
+    <Content Remove="data\preferenceTheater.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="data\preferenceChildren.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Include="data\preferenceFamily.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Include="data\preferenceTheater.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Redis.Om" Version="0.7.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>

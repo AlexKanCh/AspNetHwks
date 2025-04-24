@@ -39,18 +39,20 @@ public class PreferenceController : ControllerBase
         return _preference.ToList();
     }
 
-    ///// <summary>
-    ///// Filters Preferences by their  name
-    ///// </summary>
-    ///// <param name="firstName"></param>
-    ///// <param name="lastName"></param>
-    ///// <returns></returns>
-    //[HttpGet("filterName")]
-    //public IList<Preference> FilterByName([FromQuery] string name)
-    //{
-    //    return _preference.Where(x => x.Name == name ).ToList();
-    //}
-
+    /// <summary>
+    /// Get preferences by Ids
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("by-ids")]
+    public IList<Preference> GetPreferences([FromQuery] List<string> ids)
+    {
+        if (ids == null || ids.Count == 0)
+        {
+            return new List<Preference>(); 
+        }
+        return _preference.Where(p => ids.Contains(p.Id)).ToList();
+    }
+ 
     /// <summary>
     /// Updates a Preference at Id
     /// </summary>
