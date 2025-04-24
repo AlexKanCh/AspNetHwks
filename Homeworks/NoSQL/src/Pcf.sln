@@ -37,7 +37,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pcf.ReceivingFromPartner.We
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pcf.Administration.IntegrationTests", "Pcf.Administration\Pcf.Administration.IntegrationTests\Pcf.Administration.IntegrationTests.csproj", "{38F1FFB6-5EBF-4EDF-B74E-AF29B0F1ABF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pcf.Preferences.WebHost", "Pcf.Preferences\Pcf.Preferences.WebHost.csproj", "{A9552110-7767-4DD5-BA62-D3FBA05E86A1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pcf.Preferences.WebHost", "Pcf.Preferences\Pcf.Preferences.WebHost\Pcf.Preferences.WebHost.csproj", "{A9552110-7767-4DD5-BA62-D3FBA05E86A1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pcf.Preferences", "Pcf.Preferences", "{FEA7E90B-0C50-4099-996B-DEABCCD7ADFC}"
 EndProject
