@@ -73,7 +73,7 @@ namespace Pcf.GivingToCustomer.WebHost.Controllers
         {
             //Получаем предпочтения из бд и сохраняем большой объект
             var ids= request.PreferenceIds.Select(x=>x.ToString()).ToList();
-            var preferences = await _preferenceService.GetPreferencesAsync(ids);
+            var preferences = await _preferenceService.GetPreferences(ids);
 
             Customer customer = CustomerMapper.MapFromModel(request, preferences);
             
@@ -96,7 +96,7 @@ namespace Pcf.GivingToCustomer.WebHost.Controllers
                 return NotFound();
 
             var ids = request.PreferenceIds.Select(x => x.ToString()).ToList();
-            var preferences = await _preferenceService.GetPreferencesAsync(ids);
+            var preferences = await _preferenceService.GetPreferences(ids);
 
             CustomerMapper.MapFromModel(request, preferences, customer);
 
