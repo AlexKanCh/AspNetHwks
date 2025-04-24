@@ -19,7 +19,27 @@ services:
       - "ConnectionStrings:PromocodeFactoryAdministrationDb=Host=promocode-factory-administration-db;Database=promocode_factory_administration_db;Username=postgres;Password=docker"          
     depends_on: 
       - promocode-factory-administration-db
-
+      
+  #Preference redis db
+  promocode-factory-preference-db:
+    image: "redis/redis-stack:latest"
+    container_name: 'promocode-factory-preference-db'
+    restart: always 
+    ports:
+      - 6379:6379
+      - 8001:8001
+  #Preference Api
+  promocode-factory-preference-api:
+    build: src/Pcf.Preferences/
+    container_name: 'promocode-factory-preference-api'
+    restart: always
+    ports:
+      - "8094:8080"
+    environment:
+      - "REDIS_CONNECTION_STRING: promocode-factory-preference-db:6379,defaultDatabase=0"          
+    depends_on: 
+      - promocode-factory-preference-db
+      
   #ReceivingFromPartner Db
   promocode-factory-receiving-from-partner-db:
     image: "postgres:latest"

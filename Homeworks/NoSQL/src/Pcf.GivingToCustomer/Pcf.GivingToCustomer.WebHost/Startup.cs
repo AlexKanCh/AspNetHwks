@@ -17,6 +17,7 @@ using Pcf.GivingToCustomer.DataAccess.Data;
 using Pcf.GivingToCustomer.DataAccess.Repositories;
 using Pcf.GivingToCustomer.Integration;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
+using Pcf.GivingToCustomer.WebHost.Services;
 
 namespace Pcf.GivingToCustomer.WebHost
 {
@@ -50,6 +51,11 @@ namespace Pcf.GivingToCustomer.WebHost
             {
                 options.Title = "PromoCode Factory Giving To Customer API Doc";
                 options.Version = "1.0";
+            });
+
+            services.AddHttpClient<PreferenceService>(client =>
+            {
+                client.BaseAddress = new Uri("http://localhost:8094/preference/");
             });
         }
 

@@ -7,6 +7,7 @@ using Pcf.GivingToCustomer.Core.Abstractions.Repositories;
 using Pcf.GivingToCustomer.Core.Domain;
 using Pcf.GivingToCustomer.WebHost.Mappers;
 using Pcf.GivingToCustomer.WebHost.Models;
+using Pcf.GivingToCustomer.WebHost.Services;
 
 namespace Pcf.GivingToCustomer.WebHost.Controllers
 {
@@ -19,13 +20,13 @@ namespace Pcf.GivingToCustomer.WebHost.Controllers
         : ControllerBase
     {
         private readonly IRepository<Customer> _customerRepository;
-        private readonly IRepository<Preference> _preferenceRepository;
+        private readonly PreferenceService _preferenceService; 
 
-        public CustomersController(IRepository<Customer> customerRepository, 
-            IRepository<Preference> preferenceRepository)
+        public CustomersController(IRepository<Customer> customerRepository,
+            PreferenceService preferenceService)
         {
             _customerRepository = customerRepository;
-            _preferenceRepository = preferenceRepository;
+            _preferenceService = preferenceService;
         }
         
         /// <summary>
@@ -71,8 +72,8 @@ namespace Pcf.GivingToCustomer.WebHost.Controllers
         public async Task<ActionResult<CustomerResponse>> CreateCustomerAsync(CreateOrEditCustomerRequest request)
         {
             //Получаем предпочтения из бд и сохраняем большой объект
-            var preferences = await _preferenceRepository
-                .GetRangeByIdsAsync(request.PreferenceIds);
+            var ids= request.PreferenceIds.Select(x=>x.ToString()).ToList();
+            var preferences = await _preferenceService.GetPreferences(ids);
 
             Customer customer = CustomerMapper.MapFromModel(request, preferences);
             
@@ -93,9 +94,10 @@ namespace Pcf.GivingToCustomer.WebHost.Controllers
             
             if (customer == null)
                 return NotFound();
-            
-            var preferences = await _preferenceRepository.GetRangeByIdsAsync(request.PreferenceIds);
-            
+
+            var ids = request.PreferenceIds.Select(x => x.ToString()).ToList();
+            var preferences = await _preferenceService.GetPreferences(ids);
+
             CustomerMapper.MapFromModel(request, preferences, customer);
 
             await _customerRepository.UpdateAsync(customer);
