@@ -1,0 +1,22 @@
+version: "3.4"
+services:
+  api:
+    build: src
+    container_name: 'promocodefactory_api'
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - "ConnectionString:Host=postgres:5432;Database=postgres_db;Username=postgres;Password=postgres"
+    depends_on: 
+      - postgres
+  postgres:
+    image: postgres:alpine
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: postgres_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      TZ: Europe/Moscow

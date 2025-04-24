@@ -24,8 +24,8 @@ public class Program
             var db = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
             //await db.Database.EnsureDeletedAsync();
             //await db.Database.EnsureCreatedAsync();
-            await db.Database.MigrateAsync();
-            await InitializeData(scope.ServiceProvider);
+            //await db.Database.MigrateAsync();
+            //await InitializeData(scope.ServiceProvider);
         }
 
         await host.RunAsync();
