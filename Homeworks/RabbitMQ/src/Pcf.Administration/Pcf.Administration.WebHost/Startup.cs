@@ -47,8 +47,8 @@ namespace Pcf.Administration.WebHost
                 options.Title = "PromoCode Factory Administration API Doc";
                 options.Version = "1.0";
             });
+            services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddHostedService<RabbitMqConsumerService>();
-            services.AddTransient<IEmployeeService, EmployeeService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

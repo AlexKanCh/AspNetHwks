@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Pcf.Administration.Core.Services;
 using RabbitMQ.Client;
@@ -13,15 +14,15 @@ namespace Pcf.Administration.WebHost.Services;
 public class RabbitMqConsumerService : BackgroundService
 {
     private readonly ILogger<RabbitMqConsumerService> _logger;
-    private readonly IEmployeeService _employeeService;
+    private readonly IServiceProvider _serviceProvider;
     private IConnection _connection;
     private IChannel _channel;
     private const string _queueName = "promocode-events";
 
-    public RabbitMqConsumerService(ILogger<RabbitMqConsumerService> logger, IEmployeeService employeeService)
+    public RabbitMqConsumerService(IServiceProvider serviceProvider, ILogger<RabbitMqConsumerService> logger)
     {
         _logger = logger;
-        _employeeService = employeeService;
+        _serviceProvider = serviceProvider;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -56,10 +57,8 @@ public class RabbitMqConsumerService : BackgroundService
             }
         };
 
-        // Начало прослушивания очереди
         await _channel.BasicConsumeAsync(queue: _queueName, autoAck: false, consumer: consumer);
 
-        // Ожидание завершения работы сервиса
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(1000, stoppingToken);
@@ -68,11 +67,16 @@ public class RabbitMqConsumerService : BackgroundService
 
     private async Task ProcessMessageAsync(string message)
     {
-        // Здесь можно вызвать бизнес-логику, например, через сервис из Core
         _logger.LogInformation($"Administration: Processing  message: {message}");
         if (Guid.TryParse(message, out var id))
         {
-            await _employeeService.UpdateAppliedPromocodesAsync(id);
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var scopedServices = scope.ServiceProvider;
+                var employeeService = scopedServices.GetRequiredService<IEmployeeService>();
+
+                await employeeService.UpdateAppliedPromocodesAsync(id);
+            }
         }
     }
 
