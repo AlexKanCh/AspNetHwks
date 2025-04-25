@@ -2,8 +2,10 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using Pcf.Administration.Core.Domain.Administration;
+using Pcf.Administration.Core.Services;
 using Pcf.Administration.DataAccess.Repositories;
 using Pcf.Administration.WebHost.Controllers;
+using Pcf.Administration.WebHost.Services;
 using Xunit;
 
 namespace Pcf.Administration.IntegrationTests.Components.WebHost.Controllers
@@ -12,12 +14,14 @@ namespace Pcf.Administration.IntegrationTests.Components.WebHost.Controllers
     public class EmployeesControllerTests : IClassFixture<EfDatabaseFixture>
     {
         private EfRepository<Employee> _employeesRepository;
+        private IEmployeeService _employeesService;
         private EmployeesController _employeesController;
 
         public EmployeesControllerTests(EfDatabaseFixture efDatabaseFixture)
         {
             _employeesRepository = new EfRepository<Employee>(efDatabaseFixture.DbContext);
-            _employeesController = new EmployeesController(_employeesRepository);
+            _employeesService = new EmployeeService(_employeesRepository);
+            _employeesController = new EmployeesController(_employeesService);
         }
 
         [Fact]

@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Pcf.Administration.Core.Abstractions.Repositories;
 using Pcf.Administration.Core.Domain.Administration;
+using Pcf.Administration.Core.Exceptions;
+using Pcf.Administration.Core.Services;
 using Pcf.Administration.WebHost.Models;
 
 namespace Pcf.Administration.WebHost.Controllers
@@ -17,11 +19,11 @@ namespace Pcf.Administration.WebHost.Controllers
     public class EmployeesController
         : ControllerBase
     {
-        private readonly IRepository<Employee> _employeeRepository;
+        private readonly IEmployeeService _employeesService;
 
-        public EmployeesController(IRepository<Employee> employeeRepository)
+        public EmployeesController(IEmployeeService employeesService)
         {
-            _employeeRepository = employeeRepository;
+            _employeesService = employeesService;
         }
 
         /// <summary>
@@ -31,7 +33,7 @@ namespace Pcf.Administration.WebHost.Controllers
         [HttpGet]
         public async Task<List<EmployeeShortResponse>> GetEmployeesAsync()
         {
-            var employees = await _employeeRepository.GetAllAsync();
+            var employees = await _employeesService.GetAllAsync();
 
             var employeesModelList = employees.Select(x =>
                 new EmployeeShortResponse()
@@ -52,7 +54,7 @@ namespace Pcf.Administration.WebHost.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<EmployeeResponse>> GetEmployeeByIdAsync(Guid id)
         {
-            var employee = await _employeeRepository.GetByIdAsync(id);
+            var employee = await _employeesService.GetByIdAsync(id);
 
             if (employee == null)
                 return NotFound();
@@ -83,16 +85,16 @@ namespace Pcf.Administration.WebHost.Controllers
 
         public async Task<IActionResult> UpdateAppliedPromocodesAsync(Guid id)
         {
-            var employee = await _employeeRepository.GetByIdAsync(id);
+            try
+            {
+                await _employeesService.UpdateAppliedPromocodesAsync(id);
 
-            if (employee == null)
+                return Ok();
+            }
+            catch (EmployeeNotFoundException)
+            {
                 return NotFound();
-
-            employee.AppliedPromocodesCount++;
-
-            await _employeeRepository.UpdateAsync(employee);
-
-            return Ok();
+            }
         }
     }
 }
