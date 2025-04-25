@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 namespace Pcf.ReceivingFromPartner.WebHost.Services;
 
 
-public class RabbitMqProducerService : IAsyncDisposable
+public class RabbitMqPromocodeToCustomerWithPreferenceProducerService : IAsyncDisposable
 {
     private readonly IConnection _connection;
     private readonly IChannel _channel;
-    private const string _queueName = "promocode-events";
+    private const string _queueName = "promocode-to-customer-with-preference-events";
 
     public async Task SendMessageAsync(string message)
     {

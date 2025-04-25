@@ -12,6 +12,8 @@ using Pcf.GivingToCustomer.DataAccess.Data;
 using Pcf.GivingToCustomer.DataAccess;
 using Pcf.GivingToCustomer.DataAccess.Repositories;
 using Pcf.GivingToCustomer.Integration;
+using Pcf.GivingToCustomer.Core.Services;
+using Pcf.GivingToCustomer.WebHost.Services;
 
 namespace Pcf.GivingToCustomer.WebHost
 {
@@ -48,6 +50,10 @@ namespace Pcf.GivingToCustomer.WebHost
                 options.Title = "PromoCode Factory Giving To Customer API Doc";
                 options.Version = "1.0";
             });
+            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IPreferenceService, PreferenceService>();
+            services.AddScoped<IPromoCodeService, PromoCodeService>();
+            services.AddHostedService<RabbitMqConsumerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

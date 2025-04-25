@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Pcf.GivingToCustomer.Core.Domain;
+﻿using Pcf.GivingToCustomer.Core.Domain;
 using Pcf.GivingToCustomer.WebHost.Models;
+using System;
+using System.Collections.Generic;
 
 namespace Pcf.GivingToCustomer.WebHost.Mappers
 {
@@ -41,5 +39,26 @@ namespace Pcf.GivingToCustomer.WebHost.Mappers
 
             return promocode;
         }
+
+        public static PromoCode MapFromModel(GivePromoCodeRequest request)
+            => new()
+            {
+                Id = request.PromoCodeId,
+                PartnerId = request.PartnerId,
+                Code = request.PromoCode,
+                ServiceInfo = request.ServiceInfo,
+                PreferenceId = request.PreferenceId
+            };
+
+        public static PromoCodeShortResponse MapToShortResponse(PromoCode entity)
+            => new()
+            {
+                Id = entity.Id,
+                Code = entity.Code,
+                BeginDate = entity.BeginDate.ToString("yyyy-MM-dd"),
+                EndDate = entity.EndDate.ToString("yyyy-MM-dd"),
+                PartnerId = entity.PartnerId,
+                ServiceInfo = entity.ServiceInfo
+            };
     }
 }

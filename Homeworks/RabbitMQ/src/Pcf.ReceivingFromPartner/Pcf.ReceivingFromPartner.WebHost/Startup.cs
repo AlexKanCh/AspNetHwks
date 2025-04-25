@@ -60,7 +60,8 @@ namespace Pcf.ReceivingFromPartner.WebHost
                 options.Title = "PromoCode Factory Receiving From Partner API Doc";
                 options.Version = "1.0";
             });
-            services.AddSingleton<RabbitMqProducerService>();
+            services.AddSingleton<RabbitMqPromocodeAppliedProducerService>();
+            services.AddSingleton<RabbitMqPromocodeToCustomerWithPreferenceProducerService>();            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

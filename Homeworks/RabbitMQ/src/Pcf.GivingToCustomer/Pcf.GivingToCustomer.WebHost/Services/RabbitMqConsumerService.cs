@@ -1,15 +1,17 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Pcf.Administration.Core.Services;
+using Pcf.GivingToCustomer.Core.Domain;
+using Pcf.GivingToCustomer.Core.Services;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Pcf.Administration.WebHost.Services;
+namespace Pcf.GivingToCustomer.WebHost.Services;
 
 public class RabbitMqConsumerService : BackgroundService
 {
@@ -17,7 +19,7 @@ public class RabbitMqConsumerService : BackgroundService
     private readonly IServiceProvider _serviceProvider;
     private IConnection _connection;
     private IChannel _channel;
-    private const string _queueName = "promocode-applied-events";
+    private const string _queueName = "promocode-to-customer-with-preference-events";
 
     public RabbitMqConsumerService(IServiceProvider serviceProvider, ILogger<RabbitMqConsumerService> logger)
     {
@@ -35,7 +37,7 @@ public class RabbitMqConsumerService : BackgroundService
         await _channel.QueueDeclareAsync(queue: _queueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
         await _channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false);
 
-        _logger.LogInformation("RabbitMQ Administration consumer started. Listening to queue 'task_queue'...");
+        _logger.LogInformation("RabbitMQ GivingToCustomer consumer started. Listening to queue 'task_queue'...");
 
         var consumer = new AsyncEventingBasicConsumer(_channel);
 
@@ -44,7 +46,7 @@ public class RabbitMqConsumerService : BackgroundService
             var body = ea.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
 
-            _logger.LogInformation($"Administration: Received message: {message}");
+            _logger.LogInformation($"GivingToCustomer: Received message: {message}");
 
             try
             {
@@ -53,7 +55,7 @@ public class RabbitMqConsumerService : BackgroundService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Administration: Error processing message: {message}");
+                _logger.LogError(ex, $"GivingToCustomer: Error processing message: {message}");
             }
         };
 
@@ -67,15 +69,17 @@ public class RabbitMqConsumerService : BackgroundService
 
     private async Task ProcessMessageAsync(string message)
     {
-        _logger.LogInformation($"Administration: Processing  message: {message}");
-        if (Guid.TryParse(message, out var id))
+        _logger.LogInformation($"GivingToCustomer: Processing  message: {message}");
+        if (!string.IsNullOrEmpty(message))
         {
             using (var scope = _serviceProvider.CreateScope())
             {
                 var scopedServices = scope.ServiceProvider;
-                var employeeService = scopedServices.GetRequiredService<IEmployeeService>();
+                var promoCodeService = scopedServices.GetRequiredService<IPromoCodeService>();
 
-                await employeeService.UpdateAppliedPromocodesAsync(id);
+                var promoCode= JsonSerializer.Deserialize<PromoCode>(message);
+
+                await promoCodeService.GivePromoCodeToCustomersWithPreferenceAsync(promoCode);
             }
         }
     }
