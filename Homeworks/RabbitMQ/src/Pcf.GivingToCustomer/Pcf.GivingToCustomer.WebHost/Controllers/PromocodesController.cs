@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Pcf.GivingToCustomer.Core.Domain;
+using Pcf.GivingToCustomer.Core.Exceptions;
+using Pcf.GivingToCustomer.Core.Services;
+using Pcf.GivingToCustomer.WebHost.Mappers;
+using Pcf.GivingToCustomer.WebHost.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Pcf.GivingToCustomer.Core.Abstractions.Repositories;
-using Pcf.GivingToCustomer.Core.Domain;
-using Pcf.GivingToCustomer.WebHost.Mappers;
-using Pcf.GivingToCustomer.WebHost.Models;
 
 namespace Pcf.GivingToCustomer.WebHost.Controllers
 {
@@ -18,16 +18,11 @@ namespace Pcf.GivingToCustomer.WebHost.Controllers
     public class PromocodesController
         : ControllerBase
     {
-        private readonly IRepository<PromoCode> _promoCodesRepository;
-        private readonly IRepository<Preference> _preferencesRepository;
-        private readonly IRepository<Customer> _customersRepository;
+        private readonly IPromoCodeService _promoCodeService;
 
-        public PromocodesController(IRepository<PromoCode> promoCodesRepository,
-            IRepository<Preference> preferencesRepository, IRepository<Customer> customersRepository)
+        public PromocodesController(IPromoCodeService promoCodeService)
         {
-            _promoCodesRepository = promoCodesRepository;
-            _preferencesRepository = preferencesRepository;
-            _customersRepository = customersRepository;
+            _promoCodeService = promoCodeService;
         }
 
         /// <summary>
@@ -37,7 +32,7 @@ namespace Pcf.GivingToCustomer.WebHost.Controllers
         [HttpGet]
         public async Task<ActionResult<List<PromoCodeShortResponse>>> GetPromocodesAsync()
         {
-            var promocodes = await _promoCodesRepository.GetAllAsync();
+            var promocodes = await _promoCodeService.GetAllAsync();
 
             var response = promocodes.Select(x => new PromoCodeShortResponse()
             {
@@ -59,24 +54,17 @@ namespace Pcf.GivingToCustomer.WebHost.Controllers
         [HttpPost]
         public async Task<IActionResult> GivePromoCodesToCustomersWithPreferenceAsync(GivePromoCodeRequest request)
         {
-            //Получаем предпочтение по имени
-            var preference = await _preferencesRepository.GetByIdAsync(request.PreferenceId);
-
-            if (preference == null)
+            try
             {
-                return BadRequest();
+                PromoCode promoCode = PromoCodeMapper.MapFromModel(request);
+                await _promoCodeService.GivePromoCodeToCustomersWithPreferenceAsync(promoCode);
+
+                return CreatedAtAction(nameof(GetPromocodesAsync), new { }, null);
             }
-
-            //  Получаем клиентов с этим предпочтением:
-            var customers = await _customersRepository
-                .GetWhere(d => d.Preferences.Any(x =>
-                    x.Preference.Id == preference.Id));
-
-            PromoCode promoCode = PromoCodeMapper.MapFromModel(request, preference, customers);
-
-            await _promoCodesRepository.AddAsync(promoCode);
-
-            return CreatedAtAction(nameof(GetPromocodesAsync), new { }, null);
+            catch (PreferenceNotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
