@@ -12,6 +12,7 @@ using Pcf.Administration.Core.Abstractions.Repositories;
 using System;
 using Pcf.Administration.WebHost.Services;
 using Pcf.Administration.Core.Services;
+using Pcf.Administration.WebHost.Configuration;
 
 namespace Pcf.Administration.WebHost
 {
@@ -42,11 +43,14 @@ namespace Pcf.Administration.WebHost
 
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
+
             services.AddOpenApiDocument(options =>
             {
                 options.Title = "PromoCode Factory Administration API Doc";
                 options.Version = "1.0";
             });
+            
+            services.Configure<RabbitMqSettings>(Configuration.GetSection("RabbitMq"));
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddHostedService<RabbitMqConsumerService>();
         }

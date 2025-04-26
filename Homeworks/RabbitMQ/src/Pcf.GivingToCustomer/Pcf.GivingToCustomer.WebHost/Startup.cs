@@ -14,6 +14,7 @@ using Pcf.GivingToCustomer.DataAccess.Repositories;
 using Pcf.GivingToCustomer.Integration;
 using Pcf.GivingToCustomer.Core.Services;
 using Pcf.GivingToCustomer.WebHost.Services;
+using Pcf.GivingToCustomer.WebHost.Configuration;
 
 namespace Pcf.GivingToCustomer.WebHost
 {
@@ -50,6 +51,8 @@ namespace Pcf.GivingToCustomer.WebHost
                 options.Title = "PromoCode Factory Giving To Customer API Doc";
                 options.Version = "1.0";
             });
+
+            services.Configure<RabbitMqSettings>(Configuration.GetSection("RabbitMq"));
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IPreferenceService, PreferenceService>();
             services.AddScoped<IPromoCodeService, PromoCodeService>();

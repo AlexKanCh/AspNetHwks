@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Pcf.Administration.Core.Services;
+using Pcf.Administration.WebHost.Configuration;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
@@ -18,16 +20,25 @@ public class RabbitMqConsumerService : BackgroundService
     private IConnection _connection;
     private IChannel _channel;
     private const string _queueName = "promocode-applied-events";
+    private readonly IOptions<RabbitMqSettings> _options;
 
-    public RabbitMqConsumerService(IServiceProvider serviceProvider, ILogger<RabbitMqConsumerService> logger)
+    public RabbitMqConsumerService(IServiceProvider serviceProvider, ILogger<RabbitMqConsumerService> logger, IOptions<RabbitMqSettings> options)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
+        _options = options ?? throw new ArgumentNullException(nameof(options));
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var factory = new ConnectionFactory { HostName = "localhost" };
+        var rabbitMqSettings = _options.Value;
+
+        var factory = new ConnectionFactory
+        {
+            HostName = rabbitMqSettings.HostName,
+            UserName = rabbitMqSettings.UserName,
+            Password = rabbitMqSettings.Password
+        };
 
         _connection = await factory.CreateConnectionAsync();
         _channel = await _connection.CreateChannelAsync();
