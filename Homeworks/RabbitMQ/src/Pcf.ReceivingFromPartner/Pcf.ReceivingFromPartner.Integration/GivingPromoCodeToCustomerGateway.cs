@@ -26,7 +26,7 @@ namespace Pcf.ReceivingFromPartner.Integration
         {
             var request = new PromoCodeRequest()
             {
-                PartnerId = promoCode.Partner.Id.ToString(),
+                PartnerId = promoCode.PartnerId.ToString(),
                 BeginDate = new DateTimeOffset(promoCode.BeginDate).ToUnixTimeMilliseconds(),
                 EndDate = new DateTimeOffset(promoCode.EndDate).ToUnixTimeMilliseconds(),
                 PreferenceId = promoCode.PreferenceId.ToString(),
