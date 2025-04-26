@@ -37,7 +37,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pcf.ReceivingFromPartner.We
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pcf.Administration.IntegrationTests", "Pcf.Administration\Pcf.Administration.IntegrationTests\Pcf.Administration.IntegrationTests.csproj", "{38F1FFB6-5EBF-4EDF-B74E-AF29B0F1ABF7}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pcf.Partner", "Pcf.Partner", "{6EC0A5C8-9129-40D0-8FFC-8409442BB06F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pcf", "Pcf", "{6EC0A5C8-9129-40D0-8FFC-8409442BB06F}"
 	ProjectSection(SolutionItems) = preProject
 		PartnetClientPage.html = PartnetClientPage.html
 	EndProjectSection

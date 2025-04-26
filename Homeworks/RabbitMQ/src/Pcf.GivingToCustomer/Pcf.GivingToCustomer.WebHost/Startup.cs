@@ -79,7 +79,7 @@ namespace Pcf.GivingToCustomer.WebHost
                 endpoints.MapControllers();
             });
 
-            dbInitializer.InitializeDb();
+            //dbInitializer.InitializeDb();
         }
     }
 }

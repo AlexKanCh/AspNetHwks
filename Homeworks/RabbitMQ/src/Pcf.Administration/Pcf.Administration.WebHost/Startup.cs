@@ -47,6 +47,16 @@ namespace Pcf.Administration.WebHost
                 options.Version = "1.0";
             });
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin() 
+                          .AllowAnyMethod() 
+                          .AllowAnyHeader(); 
+                });
+            });
+
             // Добавление SignalR
             services.AddSignalR();
         }
@@ -73,13 +83,15 @@ namespace Pcf.Administration.WebHost
 
             app.UseRouting();
 
+            app.UseCors("AllowAll");
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<NotificationHub>("/notificationHub");
             });
 
-            dbInitializer.InitializeDb();
+            //dbInitializer.InitializeDb();
         }
     }
 }

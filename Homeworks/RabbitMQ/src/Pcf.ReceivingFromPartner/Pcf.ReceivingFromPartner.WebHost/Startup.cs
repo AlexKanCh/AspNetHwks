@@ -90,7 +90,7 @@ namespace Pcf.ReceivingFromPartner.WebHost
                 endpoints.MapControllers();
             });
 
-            dbInitializer.InitializeDb();
+            //dbInitializer.InitializeDb();
         }
     }
 }
