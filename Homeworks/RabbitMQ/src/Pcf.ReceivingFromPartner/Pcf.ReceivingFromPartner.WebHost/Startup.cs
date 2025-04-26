@@ -12,6 +12,7 @@ using Pcf.ReceivingFromPartner.DataAccess;
 using Pcf.ReceivingFromPartner.DataAccess.Repositories;
 using Pcf.ReceivingFromPartner.DataAccess.Data;
 using Pcf.ReceivingFromPartner.Integration;
+using Pcf.ReceivingFromPartner.Integration.Configuration;
 
 namespace Pcf.ReceivingFromPartner.WebHost
 {
@@ -31,6 +32,7 @@ namespace Pcf.ReceivingFromPartner.WebHost
             services.AddControllers().AddMvcOptions(x =>
                 x.SuppressAsyncSuffixInActionNames = false);
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+            services.Configure<SignalRSettings>(Configuration.GetSection("SignalR"));
             services.AddScoped<INotificationGateway, NotificationGateway>();
             services.AddScoped<IDbInitializer, EfDbInitializer>();
 

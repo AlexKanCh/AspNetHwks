@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignalR Partner Client</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.9/signalr.min.js"></script>
+</head>
+<body>
+    <h1>SignalR Partner Client [0da65561-cf56-4942-bff2-22f50cf70d43]</h1>
+    <div id="messages"></div>
+
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("http://localhost:8091/notificationHub") // 
+            .build();
+
+        const partnerId = "0da65561-cf56-4942-bff2-22f50cf70d43"; 
+        connection.start().then(() => {
+            console.log("SignalR connected.");
+            return connection.invoke("JoinGroup", partnerId);
+        }).catch(err => console.error(err.toString()));
+
+        // Обработка уведомлений
+        connection.on("ReceiveNotification", (message) => {
+            console.log(`Received notification: ${message}`);
+            document.getElementById("messages").innerHTML += `<p>${message}</p>`;
+        });
+    </script>
+</body>
+</html>

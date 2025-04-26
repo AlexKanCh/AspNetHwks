@@ -10,6 +10,7 @@ using Pcf.Administration.DataAccess.Repositories;
 using Pcf.Administration.DataAccess.Data;
 using Pcf.Administration.Core.Abstractions.Repositories;
 using System;
+using Pcf.Administration.WebHost.Hubs;
 
 namespace Pcf.Administration.WebHost
 {
@@ -45,6 +46,9 @@ namespace Pcf.Administration.WebHost
                 options.Title = "PromoCode Factory Administration API Doc";
                 options.Version = "1.0";
             });
+
+            // Добавление SignalR
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,6 +76,7 @@ namespace Pcf.Administration.WebHost
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<NotificationHub>("/notificationHub");
             });
 
             dbInitializer.InitializeDb();
