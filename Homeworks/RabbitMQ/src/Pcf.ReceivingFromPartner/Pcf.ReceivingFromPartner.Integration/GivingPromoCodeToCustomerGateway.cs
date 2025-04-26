@@ -2,9 +2,11 @@
 using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Net.Client;
+using Microsoft.Extensions.Options;
 using Pcf.Grpc.Contracts;
 using Pcf.ReceivingFromPartner.Core.Abstractions.Gateways;
 using Pcf.ReceivingFromPartner.Core.Domain;
+using Pcf.ReceivingFromPartner.Integration.Configuration;
 
 
 namespace Pcf.ReceivingFromPartner.Integration
@@ -13,8 +15,9 @@ namespace Pcf.ReceivingFromPartner.Integration
         : IGivingPromoCodeToCustomerGateway
     {
         private readonly PromoCodeService.PromoCodeServiceClient _client;
-        public GivingPromoCodeToCustomerGateway(string grpcServerUrl)
+        public GivingPromoCodeToCustomerGateway(IOptions<GrpcSettings> options)
         {
+            var grpcServerUrl = options.Value.Url;
             var channel = GrpcChannel.ForAddress(grpcServerUrl);
             _client = new PromoCodeService.PromoCodeServiceClient(channel);
         }

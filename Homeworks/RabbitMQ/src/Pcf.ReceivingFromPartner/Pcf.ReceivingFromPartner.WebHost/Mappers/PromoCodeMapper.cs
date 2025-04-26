@@ -29,5 +29,24 @@ namespace Pcf.ReceivingFromPartner.WebHost.Mappers
 
             return promocode;
         }
+
+        public static PromoCode MapFromModel(ReceivingPromoCodeRequest request)
+        {
+
+            var promocode = new PromoCode();
+
+            promocode.PartnerId = request.PartnerManagerId.Value;
+            promocode.Code = request.PromoCode;
+            promocode.ServiceInfo = request.ServiceInfo;
+
+            promocode.BeginDate = DateTime.Now;
+            promocode.EndDate = DateTime.Now.AddDays(30);
+
+            promocode.PreferenceId = request.PreferenceId;
+
+            promocode.PartnerManagerId = request.PartnerManagerId;
+
+            return promocode;
+        }
     }
 }
