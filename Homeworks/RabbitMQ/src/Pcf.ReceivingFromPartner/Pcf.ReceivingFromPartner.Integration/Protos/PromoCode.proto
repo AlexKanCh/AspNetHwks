@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pcf.Grpc.Contracts";
+
+package PromoCode;
+
+import "google/protobuf/empty.proto";
+
+message PromoCodeRequest {
+    string code = 1; 
+    string service_info = 2; 
+    int64 begin_date = 3; 
+    int64 end_date = 4; 
+    string partner_id = 5; 
+    string partner_manager_id = 6; 
+    string preference_id = 7; 
+}
+
+service PromoCodeService {
+    rpc CreatePromoCode (PromoCodeRequest) returns (google.protobuf.Empty);
+}
