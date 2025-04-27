@@ -91,7 +91,7 @@ namespace Pcf.Administration.WebHost
                 endpoints.MapHub<NotificationHub>("/notificationHub");
             });
 
-            //dbInitializer.InitializeDb();
+            dbInitializer.InitializeDb();
         }
     }
 }

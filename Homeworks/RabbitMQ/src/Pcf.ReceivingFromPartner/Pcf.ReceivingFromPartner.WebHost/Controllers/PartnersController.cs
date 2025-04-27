@@ -292,64 +292,59 @@ namespace Pcf.ReceivingFromPartner.WebHost.Controllers
         public async Task<IActionResult> ReceivePromoCodeFromPartnerWithPreferenceAsync(Guid id,
             ReceivingPromoCodeRequest request)
         {
-            PromoCode promoCode = PromoCodeMapper.MapFromModel(request);
+            var partner = await _partnersRepository.GetByIdAsync(id);
+
+            if (partner == null)
+            {
+                return BadRequest("Партнер не найден");
+            }
+
+            var activeLimit = partner.PartnerLimits.FirstOrDefault(x
+                => !x.CancelDate.HasValue && x.EndDate > DateTime.Now);
+
+            if (activeLimit == null)
+            {
+                return BadRequest("Нет доступного лимита на предоставление промокодов");
+            }
+
+            if (partner.NumberIssuedPromoCodes + 1 > activeLimit.Limit)
+            {
+                return BadRequest("Лимит на выдачу промокодов превышен");
+            }
+
+            if (partner.PromoCodes.Any(x => x.Code == request.PromoCode))
+            {
+                return BadRequest("Данный промокод уже был выдан ранее");
+            }
+
+            //Получаем предпочтение по имени
+            var preference = await _preferencesRepository.GetByIdAsync(request.PreferenceId);
+
+            if (preference == null)
+            {
+                return BadRequest("Предпочтение не найдено");
+            }
+
+            PromoCode promoCode = PromoCodeMapper.MapFromModel(request, preference, partner);
+            partner.PromoCodes.Add(promoCode);
+            partner.NumberIssuedPromoCodes++;
+
+            await _partnersRepository.UpdateAsync(partner);
+
+            //TODO: Чтобы информация о том, что промокод был выдан парнером была отправлена
+            //в микросервис рассылки клиентам нужно либо вызвать его API, либо отправить событие в очередь
             await _givingPromoCodeToCustomerGateway.GivePromoCodeToCustomer(promoCode);
 
-            //var partner = await _partnersRepository.GetByIdAsync(id);
+            //TODO: Чтобы информация о том, что промокод был выдан парнером была отправлена
+            //в микросервис администрирования нужно либо вызвать его API, либо отправить событие в очередь
 
-            //if (partner == null)
-            //{
-            //    return BadRequest("Партнер не найден");
-            //}
+            if (request.PartnerManagerId.HasValue)
+            {
+                await _administrationGateway.NotifyAdminAboutPartnerManagerPromoCode(request.PartnerManagerId.Value);
+            }
 
-            //var activeLimit = partner.PartnerLimits.FirstOrDefault(x
-            //    => !x.CancelDate.HasValue && x.EndDate > DateTime.Now);
-
-            //if (activeLimit == null)
-            //{
-            //    return BadRequest("Нет доступного лимита на предоставление промокодов");
-            //}
-
-            //if (partner.NumberIssuedPromoCodes + 1 > activeLimit.Limit)
-            //{
-            //    return BadRequest("Лимит на выдачу промокодов превышен");
-            //}
-
-            //if (partner.PromoCodes.Any(x => x.Code == request.PromoCode))
-            //{
-            //    return BadRequest("Данный промокод уже был выдан ранее");
-            //}
-
-            ////Получаем предпочтение по имени
-            //var preference = await _preferencesRepository.GetByIdAsync(request.PreferenceId);
-
-            //if (preference == null)
-            //{
-            //    return BadRequest("Предпочтение не найдено");
-            //}
-
-            //PromoCode promoCode = PromoCodeMapper.MapFromModel(request, preference, partner);
-            //partner.PromoCodes.Add(promoCode);
-            //partner.NumberIssuedPromoCodes++;
-
-            //await _partnersRepository.UpdateAsync(partner);
-
-            ////TODO: Чтобы информация о том, что промокод был выдан парнером была отправлена
-            ////в микросервис рассылки клиентам нужно либо вызвать его API, либо отправить событие в очередь
-            //await _givingPromoCodeToCustomerGateway.GivePromoCodeToCustomer(promoCode);
-
-            ////TODO: Чтобы информация о том, что промокод был выдан парнером была отправлена
-            ////в микросервис администрирования нужно либо вызвать его API, либо отправить событие в очередь
-
-            //if (request.PartnerManagerId.HasValue)
-            //{
-            //    await _administrationGateway.NotifyAdminAboutPartnerManagerPromoCode(request.PartnerManagerId.Value);
-            //}
-
-            //return CreatedAtAction(nameof(GetPartnerPromoCodeAsync),
-            //    new { id = partner.Id, promoCodeId = promoCode.Id }, null);
             return CreatedAtAction(nameof(GetPartnerPromoCodeAsync),
-                new { id = id, promoCodeId = promoCode.Id }, null);
+                new { id = partner.Id, promoCodeId = promoCode.Id }, null);
 
         }
     }

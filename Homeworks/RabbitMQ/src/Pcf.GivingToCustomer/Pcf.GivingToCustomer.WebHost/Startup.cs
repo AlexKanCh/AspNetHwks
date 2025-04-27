@@ -83,7 +83,7 @@ namespace Pcf.GivingToCustomer.WebHost
                 endpoints.MapGrpcService<PromoCodeGrpcService>();
             });
 
-            //dbInitializer.InitializeDb();
+            dbInitializer.InitializeDb();
         }
     }
 }

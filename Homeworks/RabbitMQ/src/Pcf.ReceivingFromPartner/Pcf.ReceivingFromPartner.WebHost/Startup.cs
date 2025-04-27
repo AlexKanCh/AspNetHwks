@@ -91,7 +91,7 @@ namespace Pcf.ReceivingFromPartner.WebHost
                 //endpoints.MapGrpcService<PromoCodeService>();
             });
 
-            //dbInitializer.InitializeDb();
+            dbInitializer.InitializeDb();
         }
     }
 }
