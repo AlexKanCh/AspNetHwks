@@ -8,4 +8,19 @@
       <ProjectReference Include="..\Pcf.GivingToCustomer.Core\Pcf.GivingToCustomer.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Protos\" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
+      <PackageReference Include="Grpc.Tools" Version="2.71.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
+    <ItemGroup>
+      <Protobuf Include="..\..\Pcf.ReceivingFromPartner\Pcf.ReceivingFromPartner.Integration\Protos\PromoCode.proto" GrpcServices="Server">
+        <Link>Protos\PromoCode.proto</Link> 
+      </Protobuf>
+    </ItemGroup>
 </Project>

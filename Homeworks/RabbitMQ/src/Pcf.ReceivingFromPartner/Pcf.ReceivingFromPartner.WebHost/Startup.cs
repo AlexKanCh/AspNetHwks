@@ -12,6 +12,7 @@ using Pcf.ReceivingFromPartner.DataAccess;
 using Pcf.ReceivingFromPartner.DataAccess.Repositories;
 using Pcf.ReceivingFromPartner.DataAccess.Data;
 using Pcf.ReceivingFromPartner.Integration;
+using Pcf.ReceivingFromPartner.Integration.Configuration;
 
 namespace Pcf.ReceivingFromPartner.WebHost
 {
@@ -31,13 +32,12 @@ namespace Pcf.ReceivingFromPartner.WebHost
             services.AddControllers().AddMvcOptions(x =>
                 x.SuppressAsyncSuffixInActionNames = false);
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+            services.Configure<SignalRSettings>(Configuration.GetSection("SignalR"));
             services.AddScoped<INotificationGateway, NotificationGateway>();
             services.AddScoped<IDbInitializer, EfDbInitializer>();
 
-            services.AddHttpClient<IGivingPromoCodeToCustomerGateway, GivingPromoCodeToCustomerGateway>(c =>
-            {
-                c.BaseAddress = new Uri(Configuration["IntegrationSettings:GivingToCustomerApiUrl"]);
-            });
+            services.Configure<GrpcSettings>(Configuration.GetSection("Grpc"));
+            services.AddScoped<IGivingPromoCodeToCustomerGateway, GivingPromoCodeToCustomerGateway>();
 
             services.AddHttpClient<IAdministrationGateway, AdministrationGateway>(c =>
             {
@@ -59,6 +59,8 @@ namespace Pcf.ReceivingFromPartner.WebHost
                 options.Title = "PromoCode Factory Receiving From Partner API Doc";
                 options.Version = "1.0";
             });
+
+            //services.AddGrpc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -86,6 +88,7 @@ namespace Pcf.ReceivingFromPartner.WebHost
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                //endpoints.MapGrpcService<PromoCodeService>();
             });
 
             dbInitializer.InitializeDb();

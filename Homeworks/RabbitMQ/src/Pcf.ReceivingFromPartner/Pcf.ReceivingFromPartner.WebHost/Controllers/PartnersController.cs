@@ -8,6 +8,7 @@ using Pcf.ReceivingFromPartner.Core.Domain;
 using Pcf.ReceivingFromPartner.Core.Abstractions.Gateways;
 using Pcf.ReceivingFromPartner.WebHost.Models;
 using Pcf.ReceivingFromPartner.WebHost.Mappers;
+using YamlDotNet.Core;
 
 namespace Pcf.ReceivingFromPartner.WebHost.Controllers
 {
@@ -344,6 +345,7 @@ namespace Pcf.ReceivingFromPartner.WebHost.Controllers
 
             return CreatedAtAction(nameof(GetPartnerPromoCodeAsync),
                 new { id = partner.Id, promoCodeId = promoCode.Id }, null);
+
         }
     }
 }

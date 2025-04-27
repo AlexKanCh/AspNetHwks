@@ -1,37 +1,50 @@
-﻿using System.Net.Http;
+﻿using System;
 using System.Threading.Tasks;
-using Pcf.ReceivingFromPartner.Integration.Dto;
+using Grpc.Core;
+using Grpc.Net.Client;
+using Microsoft.Extensions.Options;
+using Pcf.Grpc.Contracts;
 using Pcf.ReceivingFromPartner.Core.Abstractions.Gateways;
 using Pcf.ReceivingFromPartner.Core.Domain;
+using Pcf.ReceivingFromPartner.Integration.Configuration;
+
 
 namespace Pcf.ReceivingFromPartner.Integration
 {
     public class GivingPromoCodeToCustomerGateway
         : IGivingPromoCodeToCustomerGateway
     {
-        private readonly HttpClient _httpClient;
-
-        public GivingPromoCodeToCustomerGateway(HttpClient httpClient)
+        private readonly PromoCodeService.PromoCodeServiceClient _client;
+        public GivingPromoCodeToCustomerGateway(IOptions<GrpcSettings> options)
         {
-            _httpClient = httpClient;
+            var grpcServerUrl = options.Value.Url;
+            var channel = GrpcChannel.ForAddress(grpcServerUrl);
+            _client = new PromoCodeService.PromoCodeServiceClient(channel);
         }
 
         public async Task GivePromoCodeToCustomer(PromoCode promoCode)
         {
-            var dto = new GivePromoCodeToCustomerDto()
+            var request = new PromoCodeRequest()
             {
-                PartnerId = promoCode.Partner.Id,
-                BeginDate = promoCode.BeginDate.ToShortDateString(),
-                EndDate = promoCode.EndDate.ToShortDateString(),
-                PreferenceId = promoCode.PreferenceId,
-                PromoCode = promoCode.Code,
+                PartnerId = promoCode.PartnerId.ToString(),
+                BeginDate = new DateTimeOffset(promoCode.BeginDate).ToUnixTimeMilliseconds(),
+                EndDate = new DateTimeOffset(promoCode.EndDate).ToUnixTimeMilliseconds(),
+                PreferenceId = promoCode.PreferenceId.ToString(),
+                Code = promoCode.Code,
                 ServiceInfo = promoCode.ServiceInfo,
-                PartnerManagerId = promoCode.PartnerManagerId
+                PartnerManagerId = promoCode.PartnerManagerId.ToString()
             };
 
-            var response = await _httpClient.PostAsJsonAsync("api/v1/promocodes", dto);
+            try
+            {
+                await _client.CreatePromoCodeAsync(request);
 
-            response.EnsureSuccessStatusCode();
+                Console.WriteLine("Promo code created successfully.");
+            }
+            catch (RpcException ex)
+            {
+                Console.WriteLine($"gRPC error: {ex.Status.Detail}");
+            }
         }
     }
 }
